@@ -1,0 +1,20 @@
+{
+  "projectId": "690641ad0029b51eefe0",
+  "projectName": "XapZap",
+  "functions": [
+    {
+      "$id": "wasabi-upload",
+      "name": "Wasabi Upload",
+      "runtime": "node-18.0",
+      "path": ".",
+      "entrypoint": "src/main.js",
+      "execute": ["users"],
+      "events": [],
+      "schedule": "",
+      "timeout": 300,
+      "enabled": true,
+      "logging": true,
+      "scopes": []
+    }
+  ]
+}
