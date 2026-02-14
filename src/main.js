@@ -4,12 +4,12 @@ module.exports = async ({ req, res, log, error }) => {
   try {
     log('Function started');
     
-    const fileName = req.headers['x-file-name'] || `${Date.now()}_upload`;
-    const fileType = req.headers['x-file-type'] || 'application/octet-stream';
+    const data = JSON.parse(req.body);
+    const { fileName, fileType, fileData } = data;
 
     log(`Uploading file: ${fileName}, type: ${fileType}`);
 
-    if (!req.body || req.bodyRaw.length === 0) {
+    if (!fileData) {
       throw new Error('No file data received');
     }
 
@@ -22,10 +22,12 @@ module.exports = async ({ req, res, log, error }) => {
       }
     });
 
+    const buffer = Buffer.from(fileData, 'base64');
+
     const command = new PutObjectCommand({
       Bucket: process.env.WASABI_BUCKET || 'xapzap-media',
       Key: `media/${fileName}`,
-      Body: Buffer.from(req.bodyRaw, 'base64'),
+      Body: buffer,
       ContentType: fileType
     });
 
