@@ -2,11 +2,16 @@ const { S3Client, PutObjectCommand } = require('@aws-sdk/client-s3');
 
 module.exports = async ({ req, res, log, error }) => {
   try {
-    const contentType = req.headers['content-type'] || '';
+    log('Function started');
+    
     const fileName = req.headers['x-file-name'] || `${Date.now()}_upload`;
     const fileType = req.headers['x-file-type'] || 'application/octet-stream';
 
-    log(`Uploading file: ${fileName}`);
+    log(`Uploading file: ${fileName}, type: ${fileType}`);
+
+    if (!req.body || req.bodyRaw.length === 0) {
+      throw new Error('No file data received');
+    }
 
     const s3Client = new S3Client({
       region: process.env.WASABI_REGION || 'us-east-1',
@@ -20,7 +25,7 @@ module.exports = async ({ req, res, log, error }) => {
     const command = new PutObjectCommand({
       Bucket: process.env.WASABI_BUCKET || 'xapzap-media',
       Key: `media/${fileName}`,
-      Body: req.body,
+      Body: Buffer.from(req.bodyRaw, 'base64'),
       ContentType: fileType
     });
 
